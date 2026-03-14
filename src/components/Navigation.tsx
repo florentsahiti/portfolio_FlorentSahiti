@@ -18,9 +18,9 @@ export default function Navigation() {
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
+      setIsScrolled(window.scrollY > 30);
     };
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -33,44 +33,34 @@ export default function Navigation() {
   };
 
   return (
-    <motion.nav
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      transition={{ duration: 0.5 }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled ? "glass py-4" : "py-6"
-      }`}
-    >
-      <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
-        <motion.a
-          href="#"
-          className="text-2xl font-outfit font-bold gradient-text"
-          whileHover={{ scale: 1.05 }}
-        >
+    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+      isScrolled ? "glass py-3" : "py-4 bg-transparent"
+    }`}>
+      <div className="max-w-6xl mx-auto px-4 md:px-6 flex items-center justify-between">
+        <a href="#" className="text-xl font-outfit font-bold gradient-text">
           FS
-        </motion.a>
+        </a>
 
         {/* Desktop Nav */}
-        <div className="hidden md:flex items-center gap-8">
+        <div className="hidden md:flex items-center gap-6">
           {navLinks.map((link) => (
-            <motion.button
+            <button
               key={link.name}
               onClick={() => scrollToSection(link.href)}
-              className="text-text-secondary hover:text-text-primary transition-colors text-sm font-medium"
-              whileHover={{ y: -2 }}
+              className="text-text-secondary hover:text-text-primary text-sm transition-colors"
             >
               {link.name}
-            </motion.button>
+            </button>
           ))}
         </div>
 
         {/* Mobile Menu Button */}
         <button
-          className="md:hidden text-text-primary"
+          className="md:hidden p-2 text-text-primary"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           aria-label="Toggle menu"
         >
-          {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
         </button>
       </div>
 
@@ -78,17 +68,17 @@ export default function Navigation() {
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -20 }}
+            initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="md:hidden glass mt-4 mx-4 rounded-2xl p-6"
+            exit={{ opacity: 0, y: -10 }}
+            className="md:hidden glass mx-4 mt-2 rounded-xl p-4"
           >
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-3">
               {navLinks.map((link) => (
                 <button
                   key={link.name}
                   onClick={() => scrollToSection(link.href)}
-                  className="text-text-secondary hover:text-text-primary transition-colors text-left text-lg"
+                  className="text-text-secondary hover:text-text-primary text-left text-sm py-2"
                 >
                   {link.name}
                 </button>
@@ -97,6 +87,6 @@ export default function Navigation() {
           </motion.div>
         )}
       </AnimatePresence>
-    </motion.nav>
+    </nav>
   );
 }
