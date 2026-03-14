@@ -13,8 +13,8 @@ const SOCIAL_LINKS = {
   email: "florentsahiti06@gmail.com",
 };
 
-// Formspree form ID - Replace with your own after creating account at https://formspree.io
-const FORMSPREE_FORM_ID = "xwkdqvjl";
+// Formspree form ID - Get yours at https://formspree.io
+const FORMSPREE_FORM_ID = "xdawlknr";
 
 // ============================================================================
 // DATA - Skills & Projects
@@ -214,7 +214,7 @@ function ContactForm() {
       <div className="glass rounded-2xl p-8 text-center space-y-4">
         <CheckCircle className="w-16 h-16 text-green-400 mx-auto" />
         <h3 className="text-xl font-outfit font-semibold">Message Sent!</h3>
-        <p className="text-text-secondary">Thank you for reaching out. I'll get back to you soon.</p>
+        <p className="text-text-secondary">Thank you for reaching out. I&apos;ll get back to you soon.</p>
         <button
           onClick={() => setStatus("idle")}
           className="text-accent-primary hover:underline text-sm"
@@ -506,6 +506,7 @@ export default function Home() {
                 <div className="glass rounded-2xl overflow-hidden group">
                   <div className="h-48 md:h-56 relative overflow-hidden">
                     <div className={`absolute inset-0 bg-gradient-to-br ${project.screenshotColor}`} />
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={project.image}
                       alt={project.title}
