@@ -17,9 +17,18 @@ export default function Navigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
+    let ticking = false;
+    
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 30);
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          setIsScrolled(window.scrollY > 20);
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
+    
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -27,14 +36,16 @@ export default function Navigation() {
   const scrollToSection = (href: string) => {
     const element = document.querySelector(href);
     if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
+      setMobileMenuOpen(false);
+      setTimeout(() => {
+        element.scrollIntoView({ behavior: "smooth" });
+      }, 50);
     }
-    setMobileMenuOpen(false);
   };
 
   return (
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-      isScrolled ? "glass py-3" : "py-4 bg-transparent"
+      isScrolled ? "glass py-2" : "py-4 bg-transparent"
     }`}>
       <div className="max-w-6xl mx-auto px-4 md:px-6 flex items-center justify-between">
         <a href="#" className="text-xl font-outfit font-bold gradient-text">
@@ -42,12 +53,12 @@ export default function Navigation() {
         </a>
 
         {/* Desktop Nav */}
-        <div className="hidden md:flex items-center gap-6">
+        <div className="hidden md:flex items-center gap-8">
           {navLinks.map((link) => (
             <button
               key={link.name}
               onClick={() => scrollToSection(link.href)}
-              className="text-text-secondary hover:text-text-primary text-sm transition-colors"
+              className="text-text-secondary hover:text-text-primary text-sm font-medium transition-colors"
             >
               {link.name}
             </button>
@@ -60,7 +71,7 @@ export default function Navigation() {
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           aria-label="Toggle menu"
         >
-          {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+          {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </div>
 
@@ -68,21 +79,23 @@ export default function Navigation() {
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className="md:hidden glass mx-4 mt-2 rounded-xl p-4"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="md:hidden overflow-hidden"
           >
-            <div className="flex flex-col gap-3">
-              {navLinks.map((link) => (
-                <button
-                  key={link.name}
-                  onClick={() => scrollToSection(link.href)}
-                  className="text-text-secondary hover:text-text-primary text-left text-sm py-2"
-                >
-                  {link.name}
-                </button>
-              ))}
+            <div className="glass mx-4 mt-2 rounded-xl p-4">
+              <div className="flex flex-col gap-2">
+                {navLinks.map((link) => (
+                  <button
+                    key={link.name}
+                    onClick={() => scrollToSection(link.href)}
+                    className="text-text-secondary hover:text-text-primary text-left text-sm py-3 px-2 rounded-lg hover:bg-white/5 transition-colors"
+                  >
+                    {link.name}
+                  </button>
+                ))}
+              </div>
             </div>
           </motion.div>
         )}
