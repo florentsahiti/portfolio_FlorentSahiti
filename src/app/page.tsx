@@ -460,8 +460,8 @@ export default function Home() {
               { title: "Tools", icon: Wrench, skills: skills.tools, color: "orange" },
             ].map((category, idx) => (
               <FadeIn key={category.title} delay={idx * 0.1}>
-                <div className="glass rounded-2xl p-6 hover:bg-background-tertiary/30 transition-colors group">
-                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-5 ${
+                <div className="glass rounded-2xl p-5 md:p-6 hover:bg-background-tertiary/30 transition-colors group h-full flex flex-col">
+                  <div className={`w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center mb-4 ${
                     category.color === 'blue' ? 'bg-blue-500/20' :
                     category.color === 'purple' ? 'bg-purple-500/20' :
                     category.color === 'emerald' ? 'bg-emerald-500/20' : 'bg-orange-500/20'
@@ -470,10 +470,10 @@ export default function Home() {
                       category.color === 'blue' ? 'text-blue-400' :
                       category.color === 'purple' ? 'text-purple-400' :
                       category.color === 'emerald' ? 'text-emerald-400' : 'text-orange-400'
-                    } size={24} />
+                    } size={20} />
                   </div>
-                  <h3 className="text-lg font-outfit font-semibold mb-4">{category.title}</h3>
-                  <div className="flex flex-wrap gap-2">
+                  <h3 className="text-base md:text-lg font-outfit font-semibold mb-3">{category.title}</h3>
+                  <div className="flex flex-wrap gap-1.5 md:gap-2 mt-auto">
                     {category.skills.map((skill) => (
                       <span 
                         key={skill.name}
