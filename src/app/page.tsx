@@ -1,8 +1,24 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { Github, Linkedin, Mail, ArrowRight, Code, Database, Wrench, Layers, Sparkles, Globe } from "lucide-react";
+import { Github, Linkedin, Mail, ArrowRight, Code, Database, Wrench, Layers, Sparkles, Globe, Send, CheckCircle, AlertCircle } from "lucide-react";
 
+// ============================================================================
+// CONFIGURATION - Social Links
+// ============================================================================
+const SOCIAL_LINKS = {
+  linkedin: "https://www.linkedin.com/in/florent-sahiti-25a0a7230/",
+  github: "https://github.com/florentsahiti",
+  email: "florentsahiti06@gmail.com",
+};
+
+// Formspree form ID - Replace with your own after creating account at https://formspree.io
+const FORMSPREE_FORM_ID = "xwkdqvjl";
+
+// ============================================================================
+// DATA - Skills & Projects
+// ============================================================================
 const skills = {
   frontend: [
     { name: "Next.js", icon: "⚡" },
@@ -31,7 +47,7 @@ const projects = [
     description: "Business website for a leading company, featuring modern design and optimal user experience.",
     technologies: ["Next.js", "React", "TypeScript", "Tailwind CSS"],
     link: "https://www.pronex-ks.com/",
-    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&q=60",
+    image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 600'%3E%3Crect fill='%231a1a2e' width='800' height='600'/%3E%3Ctext x='400' y='300' text-anchor='middle' fill='%236366f1' font-size='48' font-family='system-ui'%3EPRONEX KS%3C/text%3E%3C/svg%3E",
     screenshotColor: "from-blue-600 to-cyan-500",
   },
   {
@@ -39,7 +55,7 @@ const projects = [
     description: "E-commerce platform with seamless shopping experience and modern web technologies.",
     technologies: ["Next.js", "Node.js", "SQL", "TypeScript"],
     link: "https://danuts.it/",
-    image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&q=60",
+    image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 600'%3E%3Crect fill='%231a1a2e' width='800' height='600'/%3E%3Ctext x='400' y='300' text-anchor='middle' fill='%238b5cf6' font-size='48' font-family='system-ui'%3EDanuts%3C/text%3E%3C/svg%3E",
     screenshotColor: "from-purple-600 to-pink-500",
   },
   {
@@ -47,7 +63,7 @@ const projects = [
     description: "Professional business website showcasing company services and portfolio.",
     technologies: ["Next.js", "React", "TypeScript"],
     link: "https://www.gazi-rks.com/",
-    image: "https://images.unsplash.com/photo-1551434678-e076c223a692?w=800&q=60",
+    image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 600'%3E%3Crect fill='%231a1a2e' width='800' height='600'/%3E%3Ctext x='400' y='300' text-anchor='middle' fill='%23f97316' font-size='48' font-family='system-ui'%3EGazi RKS%3C/text%3E%3C/svg%3E",
     screenshotColor: "from-orange-600 to-red-500",
   },
   {
@@ -55,11 +71,14 @@ const projects = [
     description: "Technology services company website with modern SaaS aesthetic.",
     technologies: ["Next.js", "TypeScript", "Tailwind CSS"],
     link: "https://afz-ict.ch/",
-    image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=60",
+    image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 600'%3E%3Crect fill='%231a1a2e' width='800' height='600'/%3E%3Ctext x='400' y='300' text-anchor='middle' fill='%2310b981' font-size='48' font-family='system-ui'%3EAFZ ICT%3C/text%3E%3C/svg%3E",
     screenshotColor: "from-emerald-600 to-teal-500",
   },
 ];
 
+// ============================================================================
+// UTILITIES
+// ============================================================================
 const scrollToSection = (href: string) => {
   const element = document.querySelector(href);
   if (element) {
@@ -67,19 +86,220 @@ const scrollToSection = (href: string) => {
   }
 };
 
-function FadeIn({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
+// Email validation regex
+const isValidEmail = (email: string): boolean => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+};
+
+// ============================================================================
+// COMPONENTS
+// ============================================================================
+
+// Fade-in animation wrapper
+function FadeIn({ children, delay = 0, className = "" }: { children: React.ReactNode; delay?: number; className?: string }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5, delay }}
+      className={className}
     >
       {children}
     </motion.div>
   );
 }
 
+// Social link button component
+function SocialLink({ 
+  href, 
+  icon: Icon, 
+  label, 
+  colorClass,
+  iconColor 
+}: { 
+  href: string; 
+  icon: React.ElementType; 
+  label: string; 
+  colorClass: string;
+  iconColor: string;
+}) {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={label}
+      className="flex items-center gap-4 p-4 glass rounded-xl hover:bg-background-tertiary/50 transition-colors"
+    >
+      <div className={`w-12 h-12 ${colorClass} rounded-xl flex items-center justify-center`}>
+        <Icon className={iconColor} size={20} />
+      </div>
+      <div>
+        <p className="text-text-tertiary text-xs">{label}</p>
+        <p className="text-text-primary font-medium text-sm">
+          {href.replace(/^https?:\/\//, '').replace(/^mailto:/, '')}
+        </p>
+      </div>
+    </a>
+  );
+}
+
+// Contact form component
+function ContactForm() {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    message: "",
+  });
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Validate fields
+    if (!formData.name.trim()) {
+      setStatus("error");
+      setErrorMessage("Please enter your name");
+      return;
+    }
+    if (!isValidEmail(formData.email)) {
+      setStatus("error");
+      setErrorMessage("Please enter a valid email address");
+      return;
+    }
+    if (!formData.message.trim()) {
+      setStatus("error");
+      setErrorMessage("Please enter a message");
+      return;
+    }
+
+    setStatus("loading");
+
+    try {
+      const response = await fetch(`https://formspree.io/f/${FORMSPREE_FORM_ID}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          message: formData.message,
+        }),
+      });
+
+      if (response.ok) {
+        setStatus("success");
+        setFormData({ name: "", email: "", message: "" });
+      } else {
+        throw new Error("Failed to send message");
+      }
+    } catch {
+      setStatus("error");
+      setErrorMessage("Failed to send message. Please try again or email directly.");
+    }
+  };
+
+  if (status === "success") {
+    return (
+      <div className="glass rounded-2xl p-8 text-center space-y-4">
+        <CheckCircle className="w-16 h-16 text-green-400 mx-auto" />
+        <h3 className="text-xl font-outfit font-semibold">Message Sent!</h3>
+        <p className="text-text-secondary">Thank you for reaching out. I'll get back to you soon.</p>
+        <button
+          onClick={() => setStatus("idle")}
+          className="text-accent-primary hover:underline text-sm"
+        >
+          Send another message
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="glass rounded-2xl p-8 space-y-5">
+      {/* Error Message */}
+      {status === "error" && (
+        <div className="flex items-center gap-2 p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm">
+          <AlertCircle size={18} />
+          {errorMessage}
+        </div>
+      )}
+
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label htmlFor="name" className="block text-text-secondary text-sm mb-2">Name</label>
+          <input
+            id="name"
+            type="text"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            placeholder="Your name"
+            disabled={status === "loading"}
+            className="w-full px-4 py-3 bg-background-tertiary border border-border rounded-xl text-text-primary placeholder:text-text-tertiary focus:outline-none focus:border-accent-primary transition-colors disabled:opacity-50"
+          />
+        </div>
+        <div>
+          <label htmlFor="email" className="block text-text-secondary text-sm mb-2">Email</label>
+          <input
+            id="email"
+            type="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            placeholder="your@email.com"
+            disabled={status === "loading"}
+            className="w-full px-4 py-3 bg-background-tertiary border border-border rounded-xl text-text-primary placeholder:text-text-tertiary focus:outline-none focus:border-accent-primary transition-colors disabled:opacity-50"
+          />
+        </div>
+      </div>
+      <div>
+        <label htmlFor="message" className="block text-text-secondary text-sm mb-2">Message</label>
+        <textarea
+          id="message"
+          name="message"
+          value={formData.message}
+          onChange={handleChange}
+          rows={5}
+          placeholder="Tell me about your project..."
+          disabled={status === "loading"}
+          className="w-full px-4 py-3 bg-background-tertiary border border-border rounded-xl text-text-primary placeholder:text-text-tertiary focus:outline-none focus:border-accent-primary transition-colors resize-none disabled:opacity-50"
+        />
+      </div>
+      <button
+        type="submit"
+        disabled={status === "loading"}
+        className="w-full py-4 bg-gradient rounded-xl font-outfit font-bold text-white transition-transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+      >
+        {status === "loading" ? (
+          <>
+            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+            Sending...
+          </>
+        ) : (
+          <>
+            Send Message
+            <Send size={18} />
+          </>
+        )}
+      </button>
+    </form>
+  );
+}
+
+// ============================================================================
+// MAIN PAGE COMPONENT
+// ============================================================================
 export default function Home() {
   return (
     <>
@@ -188,14 +408,31 @@ export default function Home() {
                   and building systems that scale with business needs.
                 </p>
 
+                {/* Social Links */}
                 <div className="flex gap-3 pt-4">
-                  <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="p-3 glass rounded-xl text-text-secondary hover:text-white transition-colors">
+                  <a
+                    href={SOCIAL_LINKS.github}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="GitHub"
+                    className="p-3 glass rounded-xl text-text-secondary hover:text-white transition-colors"
+                  >
                     <Github size={20} />
                   </a>
-                  <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="p-3 glass rounded-xl text-text-secondary hover:text-blue-400 transition-colors">
+                  <a
+                    href={SOCIAL_LINKS.linkedin}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="LinkedIn"
+                    className="p-3 glass rounded-xl text-text-secondary hover:text-blue-400 transition-colors"
+                  >
                     <Linkedin size={20} />
                   </a>
-                  <a href="mailto:florent.sahiti@email.com" className="p-3 glass rounded-xl text-text-secondary hover:text-red-400 transition-colors">
+                  <a
+                    href={`mailto:${SOCIAL_LINKS.email}`}
+                    aria-label="Email"
+                    className="p-3 glass rounded-xl text-text-secondary hover:text-red-400 transition-colors"
+                  >
                     <Mail size={20} />
                   </a>
                 </div>
@@ -376,56 +613,32 @@ export default function Home() {
               </div>
 
               <div className="space-y-3">
-                <a href="mailto:florent.sahiti@email.com" className="flex items-center gap-4 p-4 glass rounded-xl hover:bg-background-tertiary/50 transition-colors">
-                  <div className="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center">
-                    <Mail className="text-blue-400" size={20} />
-                  </div>
-                  <div>
-                    <p className="text-text-tertiary text-xs">Email</p>
-                    <p className="text-text-primary font-medium">florent.sahiti@email.com</p>
-                  </div>
-                </a>
-                <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 p-4 glass rounded-xl hover:bg-background-tertiary/50 transition-colors">
-                  <div className="w-12 h-12 bg-purple-500/20 rounded-xl flex items-center justify-center">
-                    <Github className="text-purple-400" size={20} />
-                  </div>
-                  <div>
-                    <p className="text-text-tertiary text-xs">GitHub</p>
-                    <p className="text-text-primary font-medium">github.com/florent-sahiti</p>
-                  </div>
-                </a>
-                <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 p-4 glass rounded-xl hover:bg-background-tertiary/50 transition-colors">
-                  <div className="w-12 h-12 bg-blue-600/20 rounded-xl flex items-center justify-center">
-                    <Linkedin className="text-blue-500" size={20} />
-                  </div>
-                  <div>
-                    <p className="text-text-tertiary text-xs">LinkedIn</p>
-                    <p className="text-text-primary font-medium">linkedin.com/in/florent-sahiti</p>
-                  </div>
-                </a>
+                <SocialLink
+                  href={`mailto:${SOCIAL_LINKS.email}`}
+                  icon={Mail}
+                  label="Email"
+                  colorClass="bg-blue-500/20"
+                  iconColor="text-blue-400"
+                />
+                <SocialLink
+                  href={SOCIAL_LINKS.github}
+                  icon={Github}
+                  label="GitHub"
+                  colorClass="bg-purple-500/20"
+                  iconColor="text-purple-400"
+                />
+                <SocialLink
+                  href={SOCIAL_LINKS.linkedin}
+                  icon={Linkedin}
+                  label="LinkedIn"
+                  colorClass="bg-blue-600/20"
+                  iconColor="text-blue-500"
+                />
               </div>
             </FadeIn>
 
             <FadeIn delay={0.1}>
-              <form onSubmit={(e) => { e.preventDefault(); }} className="glass rounded-2xl p-8 space-y-5">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-text-secondary text-sm mb-2">Name</label>
-                    <input type="text" required placeholder="Your name" className="w-full px-4 py-3 bg-background-tertiary border border-border rounded-xl text-text-primary placeholder:text-text-tertiary focus:outline-none focus:border-accent-primary transition-colors" />
-                  </div>
-                  <div>
-                    <label className="block text-text-secondary text-sm mb-2">Email</label>
-                    <input type="email" required placeholder="your@email.com" className="w-full px-4 py-3 bg-background-tertiary border border-border rounded-xl text-text-primary placeholder:text-text-tertiary focus:outline-none focus:border-accent-primary transition-colors" />
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-text-secondary text-sm mb-2">Message</label>
-                  <textarea required rows={5} placeholder="Tell me about your project..." className="w-full px-4 py-3 bg-background-tertiary border border-border rounded-xl text-text-primary placeholder:text-text-tertiary focus:outline-none focus:border-accent-primary transition-colors resize-none" />
-                </div>
-                <button type="submit" className="w-full py-4 bg-gradient rounded-xl font-outfit font-bold text-white transition-transform hover:scale-[1.02] active:scale-[0.98]">
-                  Send Message
-                </button>
-              </form>
+              <ContactForm />
             </FadeIn>
           </div>
         </div>

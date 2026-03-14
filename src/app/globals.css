@@ -2,8 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Outfit:wght@400;500;600;700;800;900&display=swap');
-
 * {
   box-sizing: border-box;
   padding: 0;
@@ -62,18 +60,6 @@ h1, h2, h3, h4, h5, h6 {
   background-clip: text;
 }
 
-.gradient-text {
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-@keyframes gradient-shift {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-}
-
 .line-clamp-2 {
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -83,10 +69,6 @@ h1, h2, h3, h4, h5, h6 {
 
 button, a {
   will-change: transform;
-}
-
-.glass *, .glass *::before, .glass *::after {
-  will-change: opacity;
 }
 
 @media (prefers-reduced-motion: reduce) {
